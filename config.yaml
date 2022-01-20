@@ -4,7 +4,6 @@ pulishDir: docs
 theme: hugo-theme-cleanwhite-gc
 languageCode: en-us
 disqusShortname: ''
-googleAnalytics: ''
 preserveTaxonomyNames: yes
 paginate: 5
 hasCJKLanguage: yes
