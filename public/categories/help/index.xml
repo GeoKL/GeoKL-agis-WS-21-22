@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Help on GeoKL-agis-WS-21-22</title>
+    <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/categories/help/</link>
+    <description>Recent content in Help on GeoKL-agis-WS-21-22</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 19 Jul 2021 10:52:59 +0800</lastBuildDate><atom:link href="https://GeoKL.github.io/GeoKL-agis-WS-21-22/categories/help/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/about/</link>
+      <pubDate>Fri, 16 Jul 2021 11:24:06 +0800</pubDate>
+      
+      <guid>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/about/</guid>
+      <description>Some aboute this site text</description>
+    </item>
+    
+    <item>
+      <title>Instruction</title>
+      <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/instruction/</link>
+      <pubDate>Mon, 19 Jul 2021 10:52:59 +0800</pubDate>
+      
+      <guid>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/instruction/</guid>
+      <description>Features  Light/dark mode VSCode-style code hightlighting KaTeX Mermaid Google analytics Disqus/Utterances comments Optional ToC  Usage Before using Minima, make sure you&amp;rsquo;ve got Hugo(v0.41.0 or higher) installed on your device.
+Installation Suppose blog is where you place your sources.
+cd blog git init git submodule add --depth 1 https://github.com/mivinci/hugo-theme-minima.git themes/minima Or clone directly if you don&amp;rsquo;t wanna use the Git submodule.
+git clone https://github.com/mivinci/hugo-theme-minima.git themes/minima Anyways, you just need to put Minima under the blog/themes directory.</description>
+    </item>
+    
+    <item>
+      <title>Markdown Syntax Guide</title>
+      <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/markdown-syntax/</link>
+      <pubDate>Sun, 18 Jul 2021 10:52:59 +0800</pubDate>
+      
+      <guid>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/markdown-syntax/</guid>
+      <description>This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.
+Note: to get the Markdown syntax have a look at the markrdown text file. The following HTML &amp;lt;h1&amp;gt;—&amp;lt;h6&amp;gt; elements represent six levels of section headings. &amp;lt;h1&amp;gt; is the highest section level while &amp;lt;h6&amp;gt; is the lowest.
+H1 H2 H3 H4 H5 H6 Paragraph Xerum, quo qui aut unt expliquam qui dolut labo.</description>
+    </item>
+    
+    <item>
+      <title>Math Typesetting</title>
+      <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/math-typesetting/</link>
+      <pubDate>Sun, 18 Jul 2021 10:52:59 +0800</pubDate>
+      
+      <guid>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/math-typesetting/</guid>
+      <description>Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.
+Examples  This is inline $ \(\varphi = \dfrac{1+\sqrt5}{2}= 1.6180339887…\)$ math. This is block math: $$ \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } } $$ This is inline $ (\varphi = \dfrac{1+\sqrt5}{2}= 1.6180339887…)$ math.
+This is block math: $$ \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } } $$</description>
+    </item>
+    
+  </channel>
+</rss>
