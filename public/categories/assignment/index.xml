@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Assignment on GeoKL-agis-WS-21-22</title>
+    <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/categories/assignment/</link>
+    <description>Recent content in Assignment on GeoKL-agis-WS-21-22</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 20 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://GeoKL.github.io/GeoKL-agis-WS-21-22/categories/assignment/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deriving ecological indices from LiDAR data (first approach)</title>
+      <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/2022-01-20-deriving-ecological-indices-from-lidar-data-first-approach/</link>
+      <pubDate>Thu, 20 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/2022-01-20-deriving-ecological-indices-from-lidar-data-first-approach/</guid>
+      <description>Deriving ecological indices from LiDAR data (first approach, not finished)Research Question:Is it possible to derive a suitable set of predictor variables from LiDARdata to obtain a reliable prediction of the microclimate parameters temperature and humidity?’
+Task:Read the ressources related to forest and identify those which you will use for attempting the task.Decide which algorithms and indices are adequate to answer the research questionApply and document this findings with on base of the scripts of the this unit experiencesThe Paper “Compatibility of Aerial and Terrestrial LiDAR forQuantifying Forest Structural Diversity” by LaRue et al.</description>
+    </item>
+    
+  </channel>
+</rss>
