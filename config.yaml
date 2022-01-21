@@ -1,6 +1,6 @@
 baseurl: https://GeoKL.github.io/GeoKL-agis-WS-21-22
-title: GeoKL-agis-WS-21-22
 pulishDir: docs
+title: GeoKL-agis-WS-21-22
 theme: hugo-theme-cleanwhite-gc
 languageCode: en-us
 disqusShortname: ''
