@@ -170,7 +170,7 @@ Standard metrics:
 str_grid =grid_metrics(ctg_n, func = lidR::.stdmetrics, res = 2)
 ```
 
-```{r}
+```{r echo=FALSE}
 plot(str_grid)
 ```
 
@@ -183,7 +183,7 @@ hmean <- grid_metrics(ctg_n, ~mean(Z), 2) # calculate mean at 10 m
 hmax = grid_metrics(ctg_n, func = ~max(Z), 2)
 hmin = grid_metrics(ctg_n, func = ~min(Z), 2)
 ```
-```{r}
+```{r echo=FALSE}
 plot(hmean, col = height.colors(50))
 plot(hmax, col = height.colors(50))
 plot(hmin, col = height.colors(50))
@@ -195,7 +195,7 @@ Intensity:
 iSD=grid_metrics(ctg_n, func = sd(Intensity), 2)
 imean= grid_metrics(ctg_n, func = mean(Intensity), 2)
 ```
-```{r}
+```{r echo=FALSE}
 plot(iSD)
 plot(imean)
 ```
@@ -205,7 +205,7 @@ Point density:
 #might be an important ecological indice, since the structural density of the woods has large impact on f.e. plant growth which is directly connected to micro climate
 density <- grid_metrics(ctg_n, ~length(Z)/4, 2) # calculate density
 ```
-```{r}
+```{r echo=FALSE}
 plot(density, col = gray.colors(50,0,1)) # some plotting
 ```
 

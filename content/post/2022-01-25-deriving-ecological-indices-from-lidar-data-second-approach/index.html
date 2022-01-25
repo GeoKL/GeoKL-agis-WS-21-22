@@ -35,7 +35,7 @@ weight: 100
 <script src="{{< blogdown/postref >}}index_files/clipboard/setClipboardText.js"></script>
 <link href="{{< blogdown/postref >}}index_files/mapviewCSS/mapview-popup.css" rel="stylesheet" />
 <link href="{{< blogdown/postref >}}index_files/mapviewCSS/mapview.css" rel="stylesheet" />
-<script src="{{< blogdown/postref >}}index_files/canopy height model_625b47/data_stars_canopyheightmodel12ebfc.txt"></script>
+<script src="{{< blogdown/postref >}}index_files/canopy height model_0ab6ec/data_stars_canopyheightmodelf3e10d.txt"></script>
 <script src="{{< blogdown/postref >}}index_files/joda/joda.js"></script>
 <script src="{{< blogdown/postref >}}index_files/joda/addImageQuery-bindings.js"></script>
 
@@ -108,13 +108,12 @@ lidR::opt_progress(ctg) &lt;- FALSE
 lidR::opt_laz_compression(ctg) &lt;- TRUE
 ctg@output_options$drivers$Raster$param$overwrite &lt;- TRUE
 
-#- height normalisation within the point cloud
-  # source: https://github.com/Jean-Romain/lidR/wiki/Rasterizing-perfect-canopy-height-models
-# calculate dem
-  lidR::opt_output_files(ctg) &lt;- paste0(envrmt$path_l_raster,&quot;/&quot;,&quot;MOF_lidar_2018&quot;,&quot;/{ID}&quot;,&quot;_dsm&quot;)
-  dem &lt;- grid_terrain(ctg, res = 2,lidR::knnidw(k = 6L, p = 2))
+# calculate digital elevation model (DEM)
+lidR::opt_output_files(ctg) &lt;- paste0(envrmt$path_l_raster,&quot;/&quot;,&quot;MOF_lidar_2018&quot;,&quot;/{ID}&quot;,&quot;_dsm&quot;)
+dem &lt;- grid_terrain(ctg, res = 2,lidR::knnidw(k = 6L, p = 2))
   
 #- normalize height (point cloud)
+# Subtract digital terrain model (DTM =DEM?!?) from LiDAR point cloud
 lidR::opt_output_files(ctg) &lt;- paste0(envrmt$path_l_norm,&quot;/{ID}&quot;,&quot;_norm_height&quot;)
 ctg_n=lidR::normalize_height(ctg,lidR::tin())</code></pre>
 <p>Use only four tiles of the normalized catalog to minimize computing time:</p>
@@ -241,26 +240,16 @@ tmap::tm_shape(chm) +  tmap::tm_raster(title = &quot;CHM&quot;) +
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
 <p>Standard metrics:
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<pre class="r"><code>plot(str_grid)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>Mean and max height of height normalized data:
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<pre class="r"><code>plot(hmean, col = height.colors(50))</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<pre class="r"><code>plot(hmax, col = height.colors(50))</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
-<pre class="r"><code>plot(hmin, col = height.colors(50))</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
 <p>Intensity:
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<pre class="r"><code>plot(iSD)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<pre class="r"><code>plot(imean)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
 <p>Point density:
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<pre class="r"><code>plot(density, col = gray.colors(50,0,1)) # some plotting</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>Stack the calculated metrics:</p>
 <pre class="r"><code>names(chm)=&quot;chm&quot;
 names(dem)=&quot;dem&quot;
