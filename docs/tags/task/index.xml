@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>task on GeoKL-agis-WS-21-22</title>
+    <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/tags/task/</link>
+    <description>Recent content in task on GeoKL-agis-WS-21-22</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 25 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://GeoKL.github.io/GeoKL-agis-WS-21-22/tags/task/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>deriving ecological indices from lidar data second approach</title>
+      <link>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/2022-01-25-deriving-ecological-indices-from-lidar-data-second-approach/</link>
+      <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://GeoKL.github.io/GeoKL-agis-WS-21-22/post/2022-01-25-deriving-ecological-indices-from-lidar-data-second-approach/</guid>
+      <description>Deriving ecological indices from LiDAR data (second approach)Research Question:Is it possible to derive a suitable set of predictor variables from LiDARdata to obtain a reliable prediction of the microclimate parameters temperature and humidity?’
+Task:Read the ressources related to forest and identify those which you will use for attempting the task.</description>
+    </item>
+    
+  </channel>
+</rss>

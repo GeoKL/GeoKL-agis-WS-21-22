@@ -4,7 +4,6 @@ author: KL
 date: '2022-01-20'
 slug: []
 categories:
-  - GIS
   - Assignment
 tags:
   - LiDAR

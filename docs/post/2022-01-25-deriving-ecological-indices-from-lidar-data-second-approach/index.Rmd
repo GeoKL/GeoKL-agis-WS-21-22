@@ -1,0 +1,240 @@
+---
+title: deriving ecological indices from lidar data second approach
+author: KL
+date: '2022-01-25'
+slug: []
+categories:
+  - Assignment
+tags:
+  - task
+subtitle: ''
+description: ''
+image: ''
+toc: yes
+output:
+  blogdown::html_page:
+    keep_md: yes
+weight: 100
+---
+
+# Deriving ecological indices from LiDAR data (second approach)
+
+## Research Question:
+
+Is it possible to derive a suitable set of predictor variables from LiDAR 
+data to obtain a reliable prediction of the microclimate parameters temperature and humidity?'
+
+## Task:
+
+- Read the ressources related to forest and identify those which you will use for attempting the task.
+- Decide which algorithms and indices are adequate to answer the research question
+- Apply and document this findings with on base of the scripts of the this unit experiences 
+
+The Paper  "Compatibility of Aerial and Terrestrial LiDAR for
+Quantifying Forest Structural Diversity" by LaRue et al. (2020) thematizes mainly the comparison of airial (ALS) and teresstrial (TLS) LiDAR techniques for
+quantifying forest structural diversity since Structural Diversity is, as they state, a "key feautrue of forest ecosystems" (LaRue, 2020, S.1).
+Structural Diversity therefore also can be used to predict microclimate (ebd., S.1). Their findings "indicated that aerial LiDAR could be of 
+use in quantifying broad-scale variation in structural diversity across macroscales (ebd., S.1). So according to LaRue et al. (2020), our 
+Research question should be answered with yes, it is possible. In their supplementary material, LaRue et al. list many different metrics 
+for structural diversity and how they are calculated in R. This will be usefull later on.
+
+To find the right predictors to obtain a prediction of temperature and humidity, I additionally studied chapter 8 of "The lidR package by Jean-Romain Roussel, 
+Tristan R.H. Goodbody, Piotr Tompalski 2021-01-15" and tried some of the mentioned metrics as follows. Also the review "Lidar data as indicators for forest biological diversity: a review" by Ida Marielle Mienna et al.(2018) helped to get an overview of different possible predictor variables.
+ 
+
+## Setup:
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+```
+```{r results='hide'} 
+# activate envimaR package
+require(envimaR)
+
+# set root directory
+rootDIR = "E:/edu/agis"
+
+appendpackagesToLoad = c("lidR","forestr","lmom", "rLiDAR", "mapview", "raster", "rlas", "sp", "sf","tiff","raster", "rgl","future")
+
+# define additional subfolders comment if not needed
+appendProjectDirList =  c("data/lidar/","data/lidar/l_raster","data/lidar/l_raw","data/lidar/l_norm")
+
+## define current projection (It is not magic you need to check the meta data or ask your instructor) 
+## ETRS89 / UTM zone 32N
+proj4 = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
+epsg_number = 25832
+
+# load setup Skript
+source(file.path(envimaR::alternativeEnvi(root_folder = rootDIR),"src/agis_setup.R"),echo = TRUE)
+```
+
+Plotting the point cloud (as LAS file)
+```{r}
+#---- Get all *.las files of a folder into a list
+las_files = list.files(envrmt$path_l_raw,
+                       pattern = glob2rx("*.las"),
+                       full.names = TRUE)
+
+
+# plotting the data
+las = lidR::readLAS(las_files[1])
+las
+plot(las, bg = "darkblue", color = "Z",backend="rgl")
+```
+
+Creating LASCatalog and normalizing the data:
+```{r eval=FALSE}
+# clean data
+future::plan(future::multisession)
+ctg <- lidR::readLAScatalog(las_files[1])
+lidR::projection(ctg) <- 25832
+lidR::opt_chunk_size(ctg) = 100
+lidR::opt_chunk_buffer(ctg) <- 5
+lidR::opt_progress(ctg) <- FALSE
+lidR::opt_laz_compression(ctg) <- TRUE
+ctg@output_options$drivers$Raster$param$overwrite <- TRUE
+
+#- height normalisation within the point cloud
+  # source: https://github.com/Jean-Romain/lidR/wiki/Rasterizing-perfect-canopy-height-models
+# calculate dem
+  lidR::opt_output_files(ctg) <- paste0(envrmt$path_l_raster,"/","MOF_lidar_2018","/{ID}","_dsm")
+  dem <- grid_terrain(ctg, res = 2,lidR::knnidw(k = 6L, p = 2))
+  
+#- normalize height (point cloud)
+lidR::opt_output_files(ctg) <- paste0(envrmt$path_l_norm,"/{ID}","_norm_height")
+ctg_n=lidR::normalize_height(ctg,lidR::tin())
+
+```
+
+
+
+Use the same four tiles of the normalized catalog to minimize computing time:
+```{r}
+ctg_n <- readLAScatalog(file.path(envrmt$path_l_norm, "Ausschnitt_las"))
+
+# reassign the projection
+sp::proj4string(ctg_n) <- sp::CRS(proj4)
+
+# visualize
+ctg_n
+mapview::mapview(ctg_n)
+plot(ctg_n)
+```
+
+## Metrics:
+
+The following metrics will be calculated: 
+- DEM
+- CHM
+- standard metrics from lidR package
+- mean height (of height normalized data)
+- standard deviation and mean of intensity
+- point density
+
+Read in the same four tiles as for ctg_n, but of the digital elevation model (DEM) and create one raster by merging the four tiles:
+```{r}
+dem_small <- list.files( file.path(envrmt$path_l_raster,"MOF_lidar_2018", "Ausschnitt_tif"), pattern="*.tif")
+dem_small
+
+dem <- list()
+
+for(i in 1:length(dem_small)) {
+  dem[[i]] <- raster(paste0(envrmt$path_l_raster, "/MOF_lidar_2018/", "Ausschnitt_tif/", dem_small[i]))
+}
+dem
+
+dem <- do.call(merge, dem)
+plot(dem)
+
+extent(ctg_n)
+extent(dem)
+```
+
+CHM:
+```{r}
+# calculate the chm with the pitfree algorithm
+chm = lidR::grid_canopy(ctg_n, 
+                        2, 
+                        pitfree(c(0,2,5,10,15), 
+                        c(0,1), 
+                        subcircle = 0.2))
+
+# write it to tif
+#raster::writeRaster(chm,file.path(envrmt$path_l_raster,"mof_chm_four_tiles.tif"),overwrite=TRUE) 
+
+# visualize with mapview:
+mapview::mapview(chm,
+                   legend=TRUE, 
+                   layer.name = "canopy height model",
+                   col = mvTop(256))
+
+# visualize with tmap:
+tmap::tm_shape(chm) +  tmap::tm_raster(title = "CHM") +
+  tm_grid() +
+  tm_layout(legend.outside = TRUE)
+```
+
+Standard metrics:
+```{r}
+# with the function stdmetrics, we can calculate many often used metrics (including f.e. height max and mean) at once: 
+str_grid =grid_metrics(ctg_n, func = lidR::.stdmetrics, res = 2)
+plot(str_grid)
+```
+
+Mean and max height of height normalized data:
+```{r}
+#cloud_metrics(ctg, func = ~mean(Z)) # does not work with ctg
+#voxel_metrics(ctg, func = ~mean(Z)) # does not work with ctg
+
+hmean <- grid_metrics(ctg_n, ~mean(Z), 2) # calculate mean at 10 m
+plot(hmean, col = height.colors(50))
+
+hmax = grid_metrics(ctg_n, func = ~max(Z), 2)
+plot(hmax, col = height.colors(50))
+
+hmin = grid_metrics(ctg_n, func = ~min(Z), 2)
+plot(hmin, col = height.colors(50))
+```
+
+Intensity:
+```{r}
+# calculate the standard deviation and mean of intensity on grid level:
+iSD=grid_metrics(ctg_n, func = sd(Intensity), 2)
+plot(iSD)
+
+imean= grid_metrics(ctg_n, func = mean(Intensity), 2)
+plot(imean)
+```
+
+Point density:
+```{r}
+#might be an important ecological indice, since the structural density of the woods has large impact on f.e. plant growth which is directly connected to micro climate
+density <- grid_metrics(ctg_n, ~length(Z)/4, 2) # calculate density
+plot(density, col = gray.colors(50,0,1)) # some plotting
+```
+
+
+Stack the calculated metrics:
+```{r}
+
+names(chm)="chm"
+names(dem)="dem"
+names(hmax) = "hmax"
+names(hmean) = "hmean"
+names(hmin)="hmin"
+names(iSD)= "iSD"
+names(imean)="imean"
+names(density) = "density"
+
+metricstack <- stack(chm,dem, hmax, hmean,hmin, iSD, imean, density)   
+plot(metricstack)
+```
+
+## Literature:
+LaRue, Elizabeth A. and Wagner, Franklin W. and Fei, Songlin and Atkins, Jeff W. and Fahey, Robert T. and Gough, Christopher M. and Hardiman, Brady S. (2020): Compatibility of Aerial and Terrestrial LiDAR for Quantifying Forest Structural Diversity. Remote Sensing Vol. 12.
+
+Jean-Romain Roussel, 
+Tristan R.H. Goodbody, Piotr Tompalski (2021): The lidR package.<https://jean-romain.github.io/lidRbook/>.
+
+Ida Marielle Mienna, Katrine Eldegard, Ole Martin Bollandsås, Terje Gobakken1 and Hans Ole
+Ørka (2018): Lidar data as indicators for forest biological diversity: a review.
