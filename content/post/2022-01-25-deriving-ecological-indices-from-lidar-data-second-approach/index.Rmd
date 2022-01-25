@@ -87,13 +87,12 @@ lidR::opt_progress(ctg) <- FALSE
 lidR::opt_laz_compression(ctg) <- TRUE
 ctg@output_options$drivers$Raster$param$overwrite <- TRUE
 
-#- height normalisation within the point cloud
-  # source: https://github.com/Jean-Romain/lidR/wiki/Rasterizing-perfect-canopy-height-models
-# calculate dem
-  lidR::opt_output_files(ctg) <- paste0(envrmt$path_l_raster,"/","MOF_lidar_2018","/{ID}","_dsm")
-  dem <- grid_terrain(ctg, res = 2,lidR::knnidw(k = 6L, p = 2))
+# calculate digital elevation model (DEM)
+lidR::opt_output_files(ctg) <- paste0(envrmt$path_l_raster,"/","MOF_lidar_2018","/{ID}","_dsm")
+dem <- grid_terrain(ctg, res = 2,lidR::knnidw(k = 6L, p = 2))
   
 #- normalize height (point cloud)
+# Subtract digital terrain model (DTM =DEM?!?) from LiDAR point cloud
 lidR::opt_output_files(ctg) <- paste0(envrmt$path_l_norm,"/{ID}","_norm_height")
 ctg_n=lidR::normalize_height(ctg,lidR::tin())
 
