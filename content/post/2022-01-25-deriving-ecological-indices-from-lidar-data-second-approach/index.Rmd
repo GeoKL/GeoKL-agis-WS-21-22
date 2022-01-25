@@ -31,15 +31,10 @@ data to obtain a reliable prediction of the microclimate parameters temperature 
 - Apply and document this findings with on base of the scripts of the this unit experiences 
 
 The Paper  "Compatibility of Aerial and Terrestrial LiDAR for
-Quantifying Forest Structural Diversity" by LaRue et al. (2020) thematizes mainly the comparison of airial (ALS) and teresstrial (TLS) LiDAR techniques for
-quantifying forest structural diversity since Structural Diversity is, as they state, a "key feautrue of forest ecosystems" (LaRue, 2020, S.1).
-Structural Diversity therefore also can be used to predict microclimate (ebd., S.1). Their findings "indicated that aerial LiDAR could be of 
-use in quantifying broad-scale variation in structural diversity across macroscales (ebd., S.1). So according to LaRue et al. (2020), our 
-Research question should be answered with yes, it is possible. In their supplementary material, LaRue et al. list many different metrics 
-for structural diversity and how they are calculated in R. This will be usefull later on.
+Quantifying Forest Structural Diversity" by LaRue et al. (2020) thematizes mainly the comparison of airial (ALS) and teresstrial (TLS) LiDAR techniques for quantifying forest structural diversity since Structural Diversity is, as they state, a "key feautrue of forest ecosystems" (LaRue, 2020, S.1).
+Structural Diversity therefore also can be used to predict microclimate (ebd., S.1). Their findings "indicated that aerial LiDAR could be of use in quantifying broad-scale variation in structural diversity across macroscales (ebd., S.1). So according to LaRue et al. (2020), our Research question should be answered with yes, it is possible. In their supplementary material, LaRue et al. list many different metrics for structural diversity and how they are calculated in R. This will be usefull later on.
 
-To find the right predictors to obtain a prediction of temperature and humidity, I additionally studied chapter 8 of "The lidR package by Jean-Romain Roussel, 
-Tristan R.H. Goodbody, Piotr Tompalski 2021-01-15" and tried some of the mentioned metrics as follows. Also the review "Lidar data as indicators for forest biological diversity: a review" by Ida Marielle Mienna et al.(2018) helped to get an overview of different possible predictor variables.
+To find the right predictors to obtain a prediction of temperature and humidity, I additionally studied chapter 8 of "The lidR package by Jean-Romain Roussel, Tristan R.H. Goodbody, Piotr Tompalski 2021-01-15" and tried some of the mentioned metrics as follows. Also the review "Lidar data as indicators for forest biological diversity: a review" by Ida Marielle Mienna et al.(2018) helped to get an overview of different possible predictor variables.
  
 
 ## Setup:
@@ -68,18 +63,16 @@ epsg_number = 25832
 source(file.path(envimaR::alternativeEnvi(root_folder = rootDIR),"src/agis_setup.R"),echo = TRUE)
 ```
 
-Plotting the point cloud (as LAS file)
+If I wanted to use a LAS file (not a catalog):
 ```{r}
 #---- Get all *.las files of a folder into a list
 las_files = list.files(envrmt$path_l_raw,
                        pattern = glob2rx("*.las"),
                        full.names = TRUE)
 
-
-# plotting the data
 las = lidR::readLAS(las_files[1])
 las
-plot(las, bg = "darkblue", color = "Z",backend="rgl")
+
 ```
 
 Creating LASCatalog and normalizing the data:
@@ -107,8 +100,7 @@ ctg_n=lidR::normalize_height(ctg,lidR::tin())
 ```
 
 
-
-Use the same four tiles of the normalized catalog to minimize computing time:
+Use only four tiles of the normalized catalog to minimize computing time:
 ```{r}
 ctg_n <- readLAScatalog(file.path(envrmt$path_l_norm, "Ausschnitt_las"))
 
@@ -118,7 +110,6 @@ sp::proj4string(ctg_n) <- sp::CRS(proj4)
 # visualize
 ctg_n
 mapview::mapview(ctg_n)
-plot(ctg_n)
 ```
 
 ## Metrics:
@@ -175,41 +166,47 @@ tmap::tm_shape(chm) +  tmap::tm_raster(title = "CHM") +
 ```
 
 Standard metrics:
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 # with the function stdmetrics, we can calculate many often used metrics (including f.e. height max and mean) at once: 
 str_grid =grid_metrics(ctg_n, func = lidR::.stdmetrics, res = 2)
+```
+
+```{r}
 plot(str_grid)
 ```
 
 Mean and max height of height normalized data:
-```{r}
+```{r echo=FALSE, results='hide'}
 #cloud_metrics(ctg, func = ~mean(Z)) # does not work with ctg
 #voxel_metrics(ctg, func = ~mean(Z)) # does not work with ctg
 
 hmean <- grid_metrics(ctg_n, ~mean(Z), 2) # calculate mean at 10 m
-plot(hmean, col = height.colors(50))
-
 hmax = grid_metrics(ctg_n, func = ~max(Z), 2)
-plot(hmax, col = height.colors(50))
-
 hmin = grid_metrics(ctg_n, func = ~min(Z), 2)
+```
+```{r}
+plot(hmean, col = height.colors(50))
+plot(hmax, col = height.colors(50))
 plot(hmin, col = height.colors(50))
 ```
 
 Intensity:
-```{r}
+```{r echo=FALSE, results='hide'}
 # calculate the standard deviation and mean of intensity on grid level:
 iSD=grid_metrics(ctg_n, func = sd(Intensity), 2)
-plot(iSD)
-
 imean= grid_metrics(ctg_n, func = mean(Intensity), 2)
+```
+```{r}
+plot(iSD)
 plot(imean)
 ```
 
 Point density:
-```{r}
+```{r echo=FALSE, results='hide'}
 #might be an important ecological indice, since the structural density of the woods has large impact on f.e. plant growth which is directly connected to micro climate
 density <- grid_metrics(ctg_n, ~length(Z)/4, 2) # calculate density
+```
+```{r}
 plot(density, col = gray.colors(50,0,1)) # some plotting
 ```
 

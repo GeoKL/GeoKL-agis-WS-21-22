@@ -35,7 +35,7 @@ weight: 100
 <script src="{{< blogdown/postref >}}index_files/clipboard/setClipboardText.js"></script>
 <link href="{{< blogdown/postref >}}index_files/mapviewCSS/mapview-popup.css" rel="stylesheet" />
 <link href="{{< blogdown/postref >}}index_files/mapviewCSS/mapview.css" rel="stylesheet" />
-<script src="{{< blogdown/postref >}}index_files/canopy height model_5120e4/data_stars_canopyheightmodel2b5f97.txt"></script>
+<script src="{{< blogdown/postref >}}index_files/canopy height model_625b47/data_stars_canopyheightmodel12ebfc.txt"></script>
 <script src="{{< blogdown/postref >}}index_files/joda/joda.js"></script>
 <script src="{{< blogdown/postref >}}index_files/joda/addImageQuery-bindings.js"></script>
 
@@ -58,14 +58,9 @@ data to obtain a reliable prediction of the microclimate parameters temperature 
 <li>Apply and document this findings with on base of the scripts of the this unit experiences</li>
 </ul>
 <p>The Paper “Compatibility of Aerial and Terrestrial LiDAR for
-Quantifying Forest Structural Diversity” by LaRue et al. (2020) thematizes mainly the comparison of airial (ALS) and teresstrial (TLS) LiDAR techniques for
-quantifying forest structural diversity since Structural Diversity is, as they state, a “key feautrue of forest ecosystems” (LaRue, 2020, S.1).
-Structural Diversity therefore also can be used to predict microclimate (ebd., S.1). Their findings “indicated that aerial LiDAR could be of
-use in quantifying broad-scale variation in structural diversity across macroscales (ebd., S.1). So according to LaRue et al. (2020), our
-Research question should be answered with yes, it is possible. In their supplementary material, LaRue et al. list many different metrics
-for structural diversity and how they are calculated in R. This will be usefull later on.</p>
-<p>To find the right predictors to obtain a prediction of temperature and humidity, I additionally studied chapter 8 of “The lidR package by Jean-Romain Roussel,
-Tristan R.H. Goodbody, Piotr Tompalski 2021-01-15” and tried some of the mentioned metrics as follows. Also the review “Lidar data as indicators for forest biological diversity: a review” by Ida Marielle Mienna et al.(2018) helped to get an overview of different possible predictor variables.</p>
+Quantifying Forest Structural Diversity” by LaRue et al. (2020) thematizes mainly the comparison of airial (ALS) and teresstrial (TLS) LiDAR techniques for quantifying forest structural diversity since Structural Diversity is, as they state, a “key feautrue of forest ecosystems” (LaRue, 2020, S.1).
+Structural Diversity therefore also can be used to predict microclimate (ebd., S.1). Their findings “indicated that aerial LiDAR could be of use in quantifying broad-scale variation in structural diversity across macroscales (ebd., S.1). So according to LaRue et al. (2020), our Research question should be answered with yes, it is possible. In their supplementary material, LaRue et al. list many different metrics for structural diversity and how they are calculated in R. This will be usefull later on.</p>
+<p>To find the right predictors to obtain a prediction of temperature and humidity, I additionally studied chapter 8 of “The lidR package by Jean-Romain Roussel, Tristan R.H. Goodbody, Piotr Tompalski 2021-01-15” and tried some of the mentioned metrics as follows. Also the review “Lidar data as indicators for forest biological diversity: a review” by Ida Marielle Mienna et al.(2018) helped to get an overview of different possible predictor variables.</p>
 </div>
 <div id="setup" class="section level2">
 <h2>Setup:</h2>
@@ -87,14 +82,12 @@ epsg_number = 25832
 
 # load setup Skript
 source(file.path(envimaR::alternativeEnvi(root_folder = rootDIR),&quot;src/agis_setup.R&quot;),echo = TRUE)</code></pre>
-<p>Plotting the point cloud (as LAS file)</p>
+<p>If I wanted to use a LAS file (not a catalog):</p>
 <pre class="r"><code>#---- Get all *.las files of a folder into a list
 las_files = list.files(envrmt$path_l_raw,
                        pattern = glob2rx(&quot;*.las&quot;),
                        full.names = TRUE)
 
-
-# plotting the data
 las = lidR::readLAS(las_files[1])
 las</code></pre>
 <pre><code>## class        : LAS (v1.3 format 1)
@@ -104,7 +97,6 @@ las</code></pre>
 ## area         : 0.55 kunits²
 ## points       : 26.35 million points
 ## density      : 47.7 points/units²</code></pre>
-<pre class="r"><code>plot(las, bg = &quot;darkblue&quot;, color = &quot;Z&quot;,backend=&quot;rgl&quot;)</code></pre>
 <p>Creating LASCatalog and normalizing the data:</p>
 <pre class="r"><code># clean data
 future::plan(future::multisession)
@@ -125,7 +117,7 @@ ctg@output_options$drivers$Raster$param$overwrite &lt;- TRUE
 #- normalize height (point cloud)
 lidR::opt_output_files(ctg) &lt;- paste0(envrmt$path_l_norm,&quot;/{ID}&quot;,&quot;_norm_height&quot;)
 ctg_n=lidR::normalize_height(ctg,lidR::tin())</code></pre>
-<p>Use the same four tiles of the normalized catalog to minimize computing time:</p>
+<p>Use only four tiles of the normalized catalog to minimize computing time:</p>
 <pre class="r"><code>ctg_n &lt;- readLAScatalog(file.path(envrmt$path_l_norm, &quot;Ausschnitt_las&quot;))
 
 # reassign the projection
@@ -143,8 +135,6 @@ ctg_n</code></pre>
 <pre class="r"><code>mapview::mapview(ctg_n)</code></pre>
 <div id="htmlwidget-1" style="width:672px;height:480px;" class="leaflet html-widget"></div>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"options":{"minZoom":1,"maxZoom":52,"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}},"preferCanvas":false,"bounceAtZoomLimits":false,"maxBounds":[[[-90,-370]],[[90,370]]]},"calls":[{"method":"addProviderTiles","args":["CartoDB.Positron","CartoDB.Positron","CartoDB.Positron",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["CartoDB.DarkMatter","CartoDB.DarkMatter","CartoDB.DarkMatter",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap","OpenStreetMap","OpenStreetMap",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldImagery","Esri.WorldImagery","Esri.WorldImagery",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenTopoMap","OpenTopoMap","OpenTopoMap",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"createMapPane","args":["polygon",420]},{"method":"addPolygons","args":[[[[{"lng":[8.68469315800067,8.68468709726627,8.68610738863364,8.68611342206924,8.68469315800067],"lat":[50.8419793501346,50.8428786019404,50.8428824307262,50.8419831787984,50.8419793501346]}]],[[{"lng":[8.68611343627203,8.6861074028367,8.68752769451314,8.68753370064965,8.68611343627203],"lat":[50.8419831788366,50.8428824307644,50.842886242265,50.8419869902159,50.8419831788366]}]],[[{"lng":[8.68468709720566,8.6846810361608,8.68610135482864,8.68610738857331,8.68468709720566],"lat":[50.842878610933,50.843777862599,50.8437816915067,50.8428824397188,50.842878610933]}]],[[{"lng":[8.68610740277636,8.68610136903197,8.6875216880089,8.68752769445308,8.68610740277636],"lat":[50.842882439757,50.8437816915449,50.843785503167,50.8428862512577,50.842882439757]}]]],null,"ctg_n",{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}},"pane":"polygon","stroke":true,"color":"#333333","weight":0.5,"opacity":0.9,"fill":true,"fillColor":"#6666FF","fillOpacity":0.6,"smoothFactor":1,"noClip":false},["<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>1&emsp;<\/td><\/tr><tr><td>1<\/td><th>File.Signature&emsp;<\/th><td>LASF&emsp;<\/td><\/tr><tr><td>2<\/td><th>File.Source.ID&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>3<\/td><th>GUID&emsp;<\/th><td>00000000-0000-0000-0000-000000000000&emsp;<\/td><\/tr><tr><td>4<\/td><th>Version.Major&emsp;<\/th><td>1&emsp;<\/td><\/tr><tr><td>5<\/td><th>Version.Minor&emsp;<\/th><td>3&emsp;<\/td><\/tr><tr><td>6<\/td><th>System.Identifier&emsp;<\/th><td>&emsp;<\/td><\/tr><tr><td>7<\/td><th>Generating.Software&emsp;<\/th><td>rlas R package&emsp;<\/td><\/tr><tr><td>8<\/td><th>File.Creation.Day.of.Year&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>9<\/td><th>File.Creation.Year&emsp;<\/th><td>2018&emsp;<\/td><\/tr><tr><td>10<\/td><th>Header.Size&emsp;<\/th><td>235&emsp;<\/td><\/tr><tr><td>11<\/td><th>Offset.to.point.data&emsp;<\/th><td>235&emsp;<\/td><\/tr><tr><td>12<\/td><th>Number.of.variable.length.records&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>13<\/td><th>Point.Data.Format.ID&emsp;<\/th><td>1&emsp;<\/td><\/tr><tr><td>14<\/td><th>Point.Data.Record.Length&emsp;<\/th><td>28&emsp;<\/td><\/tr><tr><td>15<\/td><th>Number.of.point.records&emsp;<\/th><td>617732&emsp;<\/td><\/tr><tr><td>16<\/td><th>X.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>17<\/td><th>Y.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>18<\/td><th>Z.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>19<\/td><th>X.offset&emsp;<\/th><td>4e+05&emsp;<\/td><\/tr><tr><td>20<\/td><th>Y.offset&emsp;<\/th><td>5e+06&emsp;<\/td><\/tr><tr><td>21<\/td><th>Z.offset&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>22<\/td><th>Max.X&emsp;<\/th><td>477900&emsp;<\/td><\/tr><tr><td>23<\/td><th>Min.X&emsp;<\/th><td>477800&emsp;<\/td><\/tr><tr><td>24<\/td><th>Max.Y&emsp;<\/th><td>5632400&emsp;<\/td><\/tr><tr><td>25<\/td><th>Min.Y&emsp;<\/th><td>5632300&emsp;<\/td><\/tr><tr><td>26<\/td><th>Max.Z&emsp;<\/th><td>38.023&emsp;<\/td><\/tr><tr><td>27<\/td><th>Min.Z&emsp;<\/th><td>-0.138&emsp;<\/td><\/tr><tr><td>28<\/td><th>CRS&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>29<\/td><th>Number.of.1st.return&emsp;<\/th><td>202803&emsp;<\/td><\/tr><tr><td>30<\/td><th>Number.of.2nd.return&emsp;<\/th><td>183529&emsp;<\/td><\/tr><tr><td>31<\/td><th>Number.of.3rd.return&emsp;<\/th><td>134968&emsp;<\/td><\/tr><tr><td>32<\/td><th>Number.of.4th.return&emsp;<\/th><td>69786&emsp;<\/td><\/tr><tr><td>33<\/td><th>Number.of.5th.return&emsp;<\/th><td>21989&emsp;<\/td><\/tr><tr><td>34<\/td><th>filename&emsp;<\/th><td>E:/edu/agis/data/lidar/l_norm/Ausschnitt_las/52_norm_height.laz&emsp;<\/td><\/tr><tr><td>35<\/td><th>geometry&emsp;<\/th><td>sfc_POLYGON&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>2&emsp;<\/td><\/tr><tr><td>1<\/td><th>File.Signature&emsp;<\/th><td>LASF&emsp;<\/td><\/tr><tr><td>2<\/td><th>File.Source.ID&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>3<\/td><th>GUID&emsp;<\/th><td>00000000-0000-0000-0000-000000000000&emsp;<\/td><\/tr><tr><td>4<\/td><th>Version.Major&emsp;<\/th><td>1&emsp;<\/td><\/tr><tr><td>5<\/td><th>Version.Minor&emsp;<\/th><td>3&emsp;<\/td><\/tr><tr><td>6<\/td><th>System.Identifier&emsp;<\/th><td>&emsp;<\/td><\/tr><tr><td>7<\/td><th>Generating.Software&emsp;<\/th><td>rlas R package&emsp;<\/td><\/tr><tr><td>8<\/td><th>File.Creation.Day.of.Year&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>9<\/td><th>File.Creation.Year&emsp;<\/th><td>2018&emsp;<\/td><\/tr><tr><td>10<\/td><th>Header.Size&emsp;<\/th><td>235&emsp;<\/td><\/tr><tr><td>11<\/td><th>Offset.to.point.data&emsp;<\/th><td>235&emsp;<\/td><\/tr><tr><td>12<\/td><th>Number.of.variable.length.records&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>13<\/td><th>Point.Data.Format.ID&emsp;<\/th><td>1&emsp;<\/td><\/tr><tr><td>14<\/td><th>Point.Data.Record.Length&emsp;<\/th><td>28&emsp;<\/td><\/tr><tr><td>15<\/td><th>Number.of.point.records&emsp;<\/th><td>619717&emsp;<\/td><\/tr><tr><td>16<\/td><th>X.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>17<\/td><th>Y.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>18<\/td><th>Z.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>19<\/td><th>X.offset&emsp;<\/th><td>4e+05&emsp;<\/td><\/tr><tr><td>20<\/td><th>Y.offset&emsp;<\/th><td>5e+06&emsp;<\/td><\/tr><tr><td>21<\/td><th>Z.offset&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>22<\/td><th>Max.X&emsp;<\/th><td>478000&emsp;<\/td><\/tr><tr><td>23<\/td><th>Min.X&emsp;<\/th><td>477900&emsp;<\/td><\/tr><tr><td>24<\/td><th>Max.Y&emsp;<\/th><td>5632400&emsp;<\/td><\/tr><tr><td>25<\/td><th>Min.Y&emsp;<\/th><td>5632300&emsp;<\/td><\/tr><tr><td>26<\/td><th>Max.Z&emsp;<\/th><td>34.943&emsp;<\/td><\/tr><tr><td>27<\/td><th>Min.Z&emsp;<\/th><td>-0.066&emsp;<\/td><\/tr><tr><td>28<\/td><th>CRS&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>29<\/td><th>Number.of.1st.return&emsp;<\/th><td>227179&emsp;<\/td><\/tr><tr><td>30<\/td><th>Number.of.2nd.return&emsp;<\/th><td>177396&emsp;<\/td><\/tr><tr><td>31<\/td><th>Number.of.3rd.return&emsp;<\/th><td>125453&emsp;<\/td><\/tr><tr><td>32<\/td><th>Number.of.4th.return&emsp;<\/th><td>63947&emsp;<\/td><\/tr><tr><td>33<\/td><th>Number.of.5th.return&emsp;<\/th><td>20719&emsp;<\/td><\/tr><tr><td>34<\/td><th>filename&emsp;<\/th><td>E:/edu/agis/data/lidar/l_norm/Ausschnitt_las/53_norm_height.laz&emsp;<\/td><\/tr><tr><td>35<\/td><th>geometry&emsp;<\/th><td>sfc_POLYGON&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>3&emsp;<\/td><\/tr><tr><td>1<\/td><th>File.Signature&emsp;<\/th><td>LASF&emsp;<\/td><\/tr><tr><td>2<\/td><th>File.Source.ID&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>3<\/td><th>GUID&emsp;<\/th><td>00000000-0000-0000-0000-000000000000&emsp;<\/td><\/tr><tr><td>4<\/td><th>Version.Major&emsp;<\/th><td>1&emsp;<\/td><\/tr><tr><td>5<\/td><th>Version.Minor&emsp;<\/th><td>3&emsp;<\/td><\/tr><tr><td>6<\/td><th>System.Identifier&emsp;<\/th><td>&emsp;<\/td><\/tr><tr><td>7<\/td><th>Generating.Software&emsp;<\/th><td>rlas R package&emsp;<\/td><\/tr><tr><td>8<\/td><th>File.Creation.Day.of.Year&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>9<\/td><th>File.Creation.Year&emsp;<\/th><td>2018&emsp;<\/td><\/tr><tr><td>10<\/td><th>Header.Size&emsp;<\/th><td>235&emsp;<\/td><\/tr><tr><td>11<\/td><th>Offset.to.point.data&emsp;<\/th><td>235&emsp;<\/td><\/tr><tr><td>12<\/td><th>Number.of.variable.length.records&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>13<\/td><th>Point.Data.Format.ID&emsp;<\/th><td>1&emsp;<\/td><\/tr><tr><td>14<\/td><th>Point.Data.Record.Length&emsp;<\/th><td>28&emsp;<\/td><\/tr><tr><td>15<\/td><th>Number.of.point.records&emsp;<\/th><td>523771&emsp;<\/td><\/tr><tr><td>16<\/td><th>X.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>17<\/td><th>Y.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>18<\/td><th>Z.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>19<\/td><th>X.offset&emsp;<\/th><td>4e+05&emsp;<\/td><\/tr><tr><td>20<\/td><th>Y.offset&emsp;<\/th><td>5e+06&emsp;<\/td><\/tr><tr><td>21<\/td><th>Z.offset&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>22<\/td><th>Max.X&emsp;<\/th><td>477900&emsp;<\/td><\/tr><tr><td>23<\/td><th>Min.X&emsp;<\/th><td>477800&emsp;<\/td><\/tr><tr><td>24<\/td><th>Max.Y&emsp;<\/th><td>5632500&emsp;<\/td><\/tr><tr><td>25<\/td><th>Min.Y&emsp;<\/th><td>5632400&emsp;<\/td><\/tr><tr><td>26<\/td><th>Max.Z&emsp;<\/th><td>35.831&emsp;<\/td><\/tr><tr><td>27<\/td><th>Min.Z&emsp;<\/th><td>-0.035&emsp;<\/td><\/tr><tr><td>28<\/td><th>CRS&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>29<\/td><th>Number.of.1st.return&emsp;<\/th><td>194894&emsp;<\/td><\/tr><tr><td>30<\/td><th>Number.of.2nd.return&emsp;<\/th><td>149957&emsp;<\/td><\/tr><tr><td>31<\/td><th>Number.of.3rd.return&emsp;<\/th><td>105767&emsp;<\/td><\/tr><tr><td>32<\/td><th>Number.of.4th.return&emsp;<\/th><td>52396&emsp;<\/td><\/tr><tr><td>33<\/td><th>Number.of.5th.return&emsp;<\/th><td>16461&emsp;<\/td><\/tr><tr><td>34<\/td><th>filename&emsp;<\/th><td>E:/edu/agis/data/lidar/l_norm/Ausschnitt_las/60_norm_height.laz&emsp;<\/td><\/tr><tr><td>35<\/td><th>geometry&emsp;<\/th><td>sfc_POLYGON&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>4&emsp;<\/td><\/tr><tr><td>1<\/td><th>File.Signature&emsp;<\/th><td>LASF&emsp;<\/td><\/tr><tr><td>2<\/td><th>File.Source.ID&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>3<\/td><th>GUID&emsp;<\/th><td>00000000-0000-0000-0000-000000000000&emsp;<\/td><\/tr><tr><td>4<\/td><th>Version.Major&emsp;<\/th><td>1&emsp;<\/td><\/tr><tr><td>5<\/td><th>Version.Minor&emsp;<\/th><td>3&emsp;<\/td><\/tr><tr><td>6<\/td><th>System.Identifier&emsp;<\/th><td>&emsp;<\/td><\/tr><tr><td>7<\/td><th>Generating.Software&emsp;<\/th><td>rlas R package&emsp;<\/td><\/tr><tr><td>8<\/td><th>File.Creation.Day.of.Year&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>9<\/td><th>File.Creation.Year&emsp;<\/th><td>2018&emsp;<\/td><\/tr><tr><td>10<\/td><th>Header.Size&emsp;<\/th><td>235&emsp;<\/td><\/tr><tr><td>11<\/td><th>Offset.to.point.data&emsp;<\/th><td>235&emsp;<\/td><\/tr><tr><td>12<\/td><th>Number.of.variable.length.records&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>13<\/td><th>Point.Data.Format.ID&emsp;<\/th><td>1&emsp;<\/td><\/tr><tr><td>14<\/td><th>Point.Data.Record.Length&emsp;<\/th><td>28&emsp;<\/td><\/tr><tr><td>15<\/td><th>Number.of.point.records&emsp;<\/th><td>472404&emsp;<\/td><\/tr><tr><td>16<\/td><th>X.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>17<\/td><th>Y.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>18<\/td><th>Z.scale.factor&emsp;<\/th><td>0.001&emsp;<\/td><\/tr><tr><td>19<\/td><th>X.offset&emsp;<\/th><td>4e+05&emsp;<\/td><\/tr><tr><td>20<\/td><th>Y.offset&emsp;<\/th><td>5e+06&emsp;<\/td><\/tr><tr><td>21<\/td><th>Z.offset&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>22<\/td><th>Max.X&emsp;<\/th><td>478000&emsp;<\/td><\/tr><tr><td>23<\/td><th>Min.X&emsp;<\/th><td>477900&emsp;<\/td><\/tr><tr><td>24<\/td><th>Max.Y&emsp;<\/th><td>5632500&emsp;<\/td><\/tr><tr><td>25<\/td><th>Min.Y&emsp;<\/th><td>5632400&emsp;<\/td><\/tr><tr><td>26<\/td><th>Max.Z&emsp;<\/th><td>35.440&emsp;<\/td><\/tr><tr><td>27<\/td><th>Min.Z&emsp;<\/th><td>-0.074&emsp;<\/td><\/tr><tr><td>28<\/td><th>CRS&emsp;<\/th><td>0&emsp;<\/td><\/tr><tr><td>29<\/td><th>Number.of.1st.return&emsp;<\/th><td>197804&emsp;<\/td><\/tr><tr><td>30<\/td><th>Number.of.2nd.return&emsp;<\/th><td>141318&emsp;<\/td><\/tr><tr><td>31<\/td><th>Number.of.3rd.return&emsp;<\/th><td> 84505&emsp;<\/td><\/tr><tr><td>32<\/td><th>Number.of.4th.return&emsp;<\/th><td>36233&emsp;<\/td><\/tr><tr><td>33<\/td><th>Number.of.5th.return&emsp;<\/th><td>10224&emsp;<\/td><\/tr><tr><td>34<\/td><th>filename&emsp;<\/th><td>E:/edu/agis/data/lidar/l_norm/Ausschnitt_las/61_norm_height.laz&emsp;<\/td><\/tr><tr><td>35<\/td><th>geometry&emsp;<\/th><td>sfc_POLYGON&emsp;<\/td><\/tr><\/table><\/div>"],{"maxWidth":800,"minWidth":50,"autoPan":true,"keepInView":false,"closeButton":true,"closeOnClick":true,"className":""},["1","2","3","4"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},{"stroke":true,"weight":1,"opacity":0.9,"fillOpacity":0.84,"bringToFront":false,"sendToBack":false}]},{"method":"addScaleBar","args":[{"maxWidth":100,"metric":true,"imperial":true,"updateWhenIdle":true,"position":"bottomleft"}]},{"method":"addHomeButton","args":[8.6846810361608,50.8419793501346,8.68753370064965,50.843785503167,true,"ctg_n","Zoom to ctg_n","<strong> ctg_n <\/strong>","bottomright"]},{"method":"addLayersControl","args":[["CartoDB.Positron","CartoDB.DarkMatter","OpenStreetMap","Esri.WorldImagery","OpenTopoMap"],"ctg_n",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]},{"method":"addLegend","args":[{"colors":["#6666FF"],"labels":["ctg_n"],"na_color":null,"na_label":"NA","opacity":1,"position":"topright","type":"factor","title":"","extra":null,"layerId":null,"className":"info legend","group":"ctg_n"}]}],"limits":{"lat":[50.8419793501346,50.843785503167],"lng":[8.6846810361608,8.68753370064965]},"fitBounds":[50.8419793501346,8.6846810361608,50.843785503167,8.68753370064965,[]]},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n      function(el, x, data) {\n      // get the leaflet map\n      var map = this; //HTMLWidgets.find('#' + el.id);\n      // we need a new div element because we have to handle\n      // the mouseover output separately\n      // debugger;\n      function addElement () {\n      // generate new div Element\n      var newDiv = $(document.createElement('div'));\n      // append at end of leaflet htmlwidget container\n      $(el).append(newDiv);\n      //provide ID and style\n      newDiv.addClass('lnlt');\n      newDiv.css({\n      'position': 'relative',\n      'bottomleft':  '0px',\n      'background-color': 'rgba(255, 255, 255, 0.7)',\n      'box-shadow': '0 0 2px #bbb',\n      'background-clip': 'padding-box',\n      'margin': '0',\n      'padding-left': '5px',\n      'color': '#333',\n      'font': '9px/1.5 \"Helvetica Neue\", Arial, Helvetica, sans-serif',\n      'z-index': '700',\n      });\n      return newDiv;\n      }\n\n\n      // check for already existing lnlt class to not duplicate\n      var lnlt = $(el).find('.lnlt');\n\n      if(!lnlt.length) {\n      lnlt = addElement();\n\n      // grab the special div we generated in the beginning\n      // and put the mousmove output there\n\n      map.on('mousemove', function (e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                           ' lon: ' + (e.latlng.lng).toFixed(5) +\n                           ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                           ' | zoom: ' + map.getZoom() +\n                           ' | x: ' + L.CRS.EPSG3857.project(e.latlng).x.toFixed(0) +\n                           ' | y: ' + L.CRS.EPSG3857.project(e.latlng).y.toFixed(0) +\n                           ' | epsg: 3857 ' +\n                           ' | proj4: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs ');\n      } else {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      }\n      });\n\n      // remove the lnlt div when mouse leaves map\n      map.on('mouseout', function (e) {\n      var strip = document.querySelector('.lnlt');\n      if( strip !==null) strip.remove();\n      });\n\n      };\n\n      //$(el).keypress(67, function(e) {\n      map.on('preclick', function(e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      var txt = document.querySelector('.lnlt').textContent;\n      console.log(txt);\n      //txt.innerText.focus();\n      //txt.select();\n      setClipboardText('\"' + txt + '\"');\n      }\n      });\n\n      }\n      ).call(this.getMap(), el, x, data);\n}","data":null},{"code":"function(el, x, data) {\n  return (function(el,x,data){\n           var map = this;\n\n           map.on('keypress', function(e) {\n               console.log(e.originalEvent.code);\n               var key = e.originalEvent.code;\n               if (key === 'KeyE') {\n                   var bb = this.getBounds();\n                   var txt = JSON.stringify(bb);\n                   console.log(txt);\n\n                   setClipboardText('\\'' + txt + '\\'');\n               }\n           })\n        }).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
-<pre class="r"><code>plot(ctg_n)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="metrics" class="section level2">
 <h2>Metrics:</h2>
@@ -249,72 +239,28 @@ tmap::tm_shape(chm) +  tmap::tm_raster(title = &quot;CHM&quot;) +
   tm_grid() +
   tm_layout(legend.outside = TRUE)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
-<p>Standard metrics:</p>
-<pre class="r"><code># with the function stdmetrics, we can calculate many often used metrics (including f.e. height max and mean) at once: 
-str_grid =grid_metrics(ctg_n, func = lidR::.stdmetrics, res = 2)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<pre><code>## Chunk 1 of 4 (25%): state &lt;U+2713&gt;
-## Chunk 2 of 4 (50%): state &lt;U+2713&gt;
-## Chunk 3 of 4 (75%): state &lt;U+2713&gt;
-## Chunk 4 of 4 (100%): state &lt;U+2713&gt;</code></pre>
+<p>Standard metrics:
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>plot(str_grid)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
-<p>Mean and max height of height normalized data:</p>
-<pre class="r"><code>#cloud_metrics(ctg, func = ~mean(Z)) # does not work with ctg
-#voxel_metrics(ctg, func = ~mean(Z)) # does not work with ctg
-
-hmean &lt;- grid_metrics(ctg_n, ~mean(Z), 2) # calculate mean at 10 m</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<pre><code>## Chunk 1 of 4 (25%): state &lt;U+2713&gt;
-## Chunk 2 of 4 (50%): state &lt;U+2713&gt;
-## Chunk 3 of 4 (75%): state &lt;U+2713&gt;
-## Chunk 4 of 4 (100%): state &lt;U+2713&gt;</code></pre>
+<p>Mean and max height of height normalized data:
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code>plot(hmean, col = height.colors(50))</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
-<pre class="r"><code>hmax = grid_metrics(ctg_n, func = ~max(Z), 2)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
-<pre><code>## Chunk 1 of 4 (25%): state &lt;U+2713&gt;
-## Chunk 2 of 4 (50%): state &lt;U+2713&gt;
-## Chunk 3 of 4 (75%): state &lt;U+2713&gt;
-## Chunk 4 of 4 (100%): state &lt;U+2713&gt;</code></pre>
-<pre class="r"><code>plot(hmax, col = height.colors(50))</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-4.png" width="672" /></p>
-<pre class="r"><code>hmin = grid_metrics(ctg_n, func = ~min(Z), 2)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-5.png" width="672" /></p>
-<pre><code>## Chunk 1 of 4 (25%): state &lt;U+2713&gt;
-## Chunk 2 of 4 (50%): state &lt;U+2713&gt;
-## Chunk 3 of 4 (75%): state &lt;U+2713&gt;
-## Chunk 4 of 4 (100%): state &lt;U+2713&gt;</code></pre>
-<pre class="r"><code>plot(hmin, col = height.colors(50))</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-6.png" width="672" /></p>
-<p>Intensity:</p>
-<pre class="r"><code># calculate the standard deviation and mean of intensity on grid level:
-iSD=grid_metrics(ctg_n, func = sd(Intensity), 2)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<pre><code>## Chunk 1 of 4 (25%): state &lt;U+2713&gt;
-## Chunk 2 of 4 (50%): state &lt;U+2713&gt;
-## Chunk 3 of 4 (75%): state &lt;U+2713&gt;
-## Chunk 4 of 4 (100%): state &lt;U+2713&gt;</code></pre>
-<pre class="r"><code>plot(iSD)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
-<pre class="r"><code>imean= grid_metrics(ctg_n, func = mean(Intensity), 2)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
-<pre><code>## Chunk 1 of 4 (25%): state &lt;U+2713&gt;
-## Chunk 2 of 4 (50%): state &lt;U+2713&gt;
-## Chunk 3 of 4 (75%): state &lt;U+2713&gt;
-## Chunk 4 of 4 (100%): state &lt;U+2713&gt;</code></pre>
-<pre class="r"><code>plot(imean)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-4.png" width="672" /></p>
-<p>Point density:</p>
-<pre class="r"><code>#might be an important ecological indice, since the structural density of the woods has large impact on f.e. plant growth which is directly connected to micro climate
-density &lt;- grid_metrics(ctg_n, ~length(Z)/4, 2) # calculate density</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<pre><code>## Chunk 1 of 4 (25%): state &lt;U+2713&gt;
-## Chunk 2 of 4 (50%): state &lt;U+2713&gt;
-## Chunk 3 of 4 (75%): state &lt;U+2713&gt;
-## Chunk 4 of 4 (100%): state &lt;U+2713&gt;</code></pre>
-<pre class="r"><code>plot(density, col = gray.colors(50,0,1)) # some plotting</code></pre>
+<pre class="r"><code>plot(hmax, col = height.colors(50))</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<pre class="r"><code>plot(hmin, col = height.colors(50))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<p>Intensity:
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>plot(iSD)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>plot(imean)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<p>Point density:
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>plot(density, col = gray.colors(50,0,1)) # some plotting</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>Stack the calculated metrics:</p>
 <pre class="r"><code>names(chm)=&quot;chm&quot;
 names(dem)=&quot;dem&quot;
@@ -327,7 +273,7 @@ names(density) = &quot;density&quot;
 
 metricstack &lt;- stack(chm,dem, hmax, hmean,hmin, iSD, imean, density)   
 plot(metricstack)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="literature" class="section level2">
 <h2>Literature:</h2>
