@@ -26,9 +26,9 @@ data to obtain a reliable prediction of the microclimate parameters temperature 
 
 ## Task:
 
-- Read the ressources related to forest and identify those which you will use for attempting the task.
-- Decide which algorithms and indices are adequate to answer the research question
-- Apply and document this findings with on base of the scripts of the this unit experiences 
+* Read the ressources related to forest and identify those which you will use for attempting the task.
+* Decide which algorithms and indices are adequate to answer the research question
+* Apply and document this findings with on base of the scripts of the this unit experiences 
 
 The Paper  "Compatibility of Aerial and Terrestrial LiDAR for
 Quantifying Forest Structural Diversity" by LaRue et al. (2020) thematizes mainly the comparison of airial (ALS) and teresstrial (TLS) LiDAR techniques for quantifying forest structural diversity since Structural Diversity is, as they state, a "key feautrue of forest ecosystems" (LaRue, 2020, S.1).
@@ -72,7 +72,6 @@ las_files = list.files(envrmt$path_l_raw,
 
 las = lidR::readLAS(las_files[1])
 las
-
 ```
 
 Creating LASCatalog and normalizing the data:
@@ -114,12 +113,12 @@ mapview::mapview(ctg_n)
 ## Metrics:
 
 The following metrics will be calculated: 
-- DEM
-- CHM
-- standard metrics from lidR package
-- mean height (of height normalized data)
-- standard deviation and mean of intensity
-- point density
+* DEM
+* CHM
+* standard metrics from lidR package
+* mean height (of height normalized data)
+* standard deviation and mean of intensity
+* point density
 
 Read in the same four tiles as for ctg_n, but of the digital elevation model (DEM) and create one raster by merging the four tiles:
 ```{r}
@@ -134,7 +133,7 @@ for(i in 1:length(dem_small)) {
 dem
 
 dem <- do.call(merge, dem)
-plot(dem)
+plot(dem, main ="digital elevation model")
 
 extent(ctg_n)
 extent(dem)
@@ -165,17 +164,17 @@ tmap::tm_shape(chm) +  tmap::tm_raster(title = "CHM") +
 ```
 
 Standard metrics:
-```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+```{r  message=FALSE, warning=FALSE, results='hide'}
 # with the function stdmetrics, we can calculate many often used metrics (including f.e. height max and mean) at once: 
 str_grid =grid_metrics(ctg_n, func = lidR::.stdmetrics, res = 2)
 ```
 
 ```{r echo=FALSE}
-plot(str_grid)
+plot(str_grid, main = "standard metrics")
 ```
 
 Mean and max height of height normalized data:
-```{r echo=FALSE, results='hide'}
+```{r  results='hide'}
 #cloud_metrics(ctg, func = ~mean(Z)) # does not work with ctg
 #voxel_metrics(ctg, func = ~mean(Z)) # does not work with ctg
 
@@ -184,35 +183,34 @@ hmax = grid_metrics(ctg_n, func = ~max(Z), 2)
 hmin = grid_metrics(ctg_n, func = ~min(Z), 2)
 ```
 ```{r echo=FALSE}
-plot(hmean, col = height.colors(50))
-plot(hmax, col = height.colors(50))
-plot(hmin, col = height.colors(50))
+plot(hmean, col = height.colors(50), main = "mean height")
+plot(hmax, col = height.colors(50), main ="max. height")
+plot(hmin, col = height.colors(50), main ="min. height")
 ```
 
 Intensity:
-```{r echo=FALSE, results='hide'}
+```{r  results='hide'}
 # calculate the standard deviation and mean of intensity on grid level:
 iSD=grid_metrics(ctg_n, func = sd(Intensity), 2)
 imean= grid_metrics(ctg_n, func = mean(Intensity), 2)
 ```
 ```{r echo=FALSE}
-plot(iSD)
-plot(imean)
+plot(iSD, main="intensity SD")
+plot(imean, main="intensity mean")
 ```
 
 Point density:
-```{r echo=FALSE, results='hide'}
+```{r  results='hide'}
 #might be an important ecological indice, since the structural density of the woods has large impact on f.e. plant growth which is directly connected to micro climate
 density <- grid_metrics(ctg_n, ~length(Z)/4, 2) # calculate density
 ```
 ```{r echo=FALSE}
-plot(density, col = gray.colors(50,0,1)) # some plotting
+plot(density, col = gray.colors(50,0,1), main = "point density") # some plotting
 ```
 
 
 Stack the calculated metrics:
 ```{r}
-
 names(chm)="chm"
 names(dem)="dem"
 names(hmax) = "hmax"

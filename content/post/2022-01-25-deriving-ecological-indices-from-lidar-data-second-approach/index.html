@@ -35,7 +35,7 @@ weight: 100
 <script src="{{< blogdown/postref >}}index_files/clipboard/setClipboardText.js"></script>
 <link href="{{< blogdown/postref >}}index_files/mapviewCSS/mapview-popup.css" rel="stylesheet" />
 <link href="{{< blogdown/postref >}}index_files/mapviewCSS/mapview.css" rel="stylesheet" />
-<script src="{{< blogdown/postref >}}index_files/canopy height model_0ab6ec/data_stars_canopyheightmodelf3e10d.txt"></script>
+<script src="{{< blogdown/postref >}}index_files/canopy height model_dc8469/data_stars_canopyheightmodel03c24a.txt"></script>
 <script src="{{< blogdown/postref >}}index_files/joda/joda.js"></script>
 <script src="{{< blogdown/postref >}}index_files/joda/addImageQuery-bindings.js"></script>
 
@@ -138,12 +138,12 @@ ctg_n</code></pre>
 <div id="metrics" class="section level2">
 <h2>Metrics:</h2>
 <p>The following metrics will be calculated:
-- DEM
-- CHM
-- standard metrics from lidR package
-- mean height (of height normalized data)
-- standard deviation and mean of intensity
-- point density</p>
+* DEM
+* CHM
+* standard metrics from lidR package
+* mean height (of height normalized data)
+* standard deviation and mean of intensity
+* point density</p>
 <p>Read in the same four tiles as for ctg_n, but of the digital elevation model (DEM) and create one raster by merging the four tiles:</p>
 <pre class="r"><code>dem_small &lt;- list.files( file.path(envrmt$path_l_raster,&quot;MOF_lidar_2018&quot;, &quot;Ausschnitt_tif&quot;), pattern=&quot;*.tif&quot;)
 dem_small</code></pre>
@@ -197,7 +197,7 @@ dem</code></pre>
 ## names      : X61_dsm 
 ## values     : 242.494, 263.087  (min, max)</code></pre>
 <pre class="r"><code>dem &lt;- do.call(merge, dem)
-plot(dem)</code></pre>
+plot(dem, main =&quot;digital elevation model&quot;)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <pre class="r"><code>extent(ctg_n)</code></pre>
 <pre><code>## class      : Extent 
@@ -238,17 +238,30 @@ tmap::tm_shape(chm) +  tmap::tm_raster(title = &quot;CHM&quot;) +
   tm_grid() +
   tm_layout(legend.outside = TRUE)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
-<p>Standard metrics:
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Standard metrics:</p>
+<pre class="r"><code># with the function stdmetrics, we can calculate many often used metrics (including f.e. height max and mean) at once: 
+str_grid =grid_metrics(ctg_n, func = lidR::.stdmetrics, res = 2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<p>Mean and max height of height normalized data:
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" />
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
-<p>Intensity:
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+<p>Mean and max height of height normalized data:</p>
+<pre class="r"><code>#cloud_metrics(ctg, func = ~mean(Z)) # does not work with ctg
+#voxel_metrics(ctg, func = ~mean(Z)) # does not work with ctg
+
+hmean &lt;- grid_metrics(ctg_n, ~mean(Z), 2) # calculate mean at 10 m
+hmax = grid_metrics(ctg_n, func = ~max(Z), 2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>hmin = grid_metrics(ctg_n, func = ~min(Z), 2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<p>Intensity:</p>
+<pre class="r"><code># calculate the standard deviation and mean of intensity on grid level:
+iSD=grid_metrics(ctg_n, func = sd(Intensity), 2)
+imean= grid_metrics(ctg_n, func = mean(Intensity), 2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
-<p>Point density:
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+<p>Point density:</p>
+<pre class="r"><code>#might be an important ecological indice, since the structural density of the woods has large impact on f.e. plant growth which is directly connected to micro climate
+density &lt;- grid_metrics(ctg_n, ~length(Z)/4, 2) # calculate density</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>Stack the calculated metrics:</p>
 <pre class="r"><code>names(chm)=&quot;chm&quot;
